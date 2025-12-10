@@ -5,17 +5,22 @@ import os
 import uuid
 import tempfile
 
-# Importa os conversores
+
 from app.services.dta_to_csv import convert_dta_to_csv
-from app.services.csv_to_dta import convert_csv_to_dta
+from app.services.txt_to_csv import convert_txt_to_csv
+from app.services.csv_to_txt import convert_csv_to_txt
+from app.services.csv_to_json import convert_csv_to_json
+from app.services.json_to_csv import convert_json_to_csv
 
 router = APIRouter()
 
-# Mapa das conversões disponíveis
+
 conversion_map = {
     ("dta", "csv"): convert_dta_to_csv,
-    ("csv", "dta"): convert_csv_to_dta,
-    # Ex: ("pdf", "jpg"): convert_pdf_to_jpg (futuramente)
+    ("txt", "csv"): convert_txt_to_csv,
+    ("csv", "txt"): convert_csv_to_txt,
+    ("csv", "json"): convert_csv_to_json,
+    ("json", "csv"): convert_json_to_csv,
 }
 
 
@@ -25,27 +30,30 @@ async def convert_file(
     from_format: str = Form(...),
     to_format: str = Form(...)
 ):
-    # Validação: conversão suportada?
+    # Validação da conversão
     conversion_key = (from_format.lower(), to_format.lower())
     if conversion_key not in conversion_map:
         raise HTTPException(status_code=400, detail="Conversão não suportada.")
 
-    # Validação: extensão do arquivo bate com o tipo informado?
+    # Verifica se a extensão do arquivo bate com o formato esperado
     file_ext = file.filename.split(".")[-1].lower()
     if file_ext != from_format.lower():
-        raise HTTPException(status_code=400, detail="Extensão do arquivo não bate com o formato de origem.")
+        raise HTTPException(
+            status_code=400, 
+            detail="Extensão do arquivo não bate com o formato de origem."
+        )
 
     # Cria arquivos temporários
     temp_dir = tempfile.mkdtemp()
     input_path = os.path.join(temp_dir, f"{uuid.uuid4()}.{from_format}")
     output_path = os.path.join(temp_dir, f"{uuid.uuid4()}.{to_format}")
 
-    # Salva o arquivo enviado
+    # Salva o arquivo recebido
     with open(input_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
     try:
-        # Chama a função de conversão apropriada
+        # Chama o serviço de conversão
         conversion_function = conversion_map[conversion_key]
         conversion_function(input_path, output_path)
 
