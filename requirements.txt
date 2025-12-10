@@ -1,0 +1,6 @@
+fastapi==0.103.2
+uvicorn==0.23.2
+pandas==2.1.4
+pyreadstat==1.2.6
+python-multipart==0.0.6
+    
