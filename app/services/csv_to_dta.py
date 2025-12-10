@@ -1,14 +1,6 @@
-import csv
+import pandas_lite as pd
 import pyreadstat
-import tempfile
 
-def convert_csv_to_dta(input_path, output_path):
-    df = []
-    
-    with open(input_path, newline='', encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            df.append(row)
-
-    # pyreadstat aceita lista de dicts
+def convert_csv_to_dta(input_path: str, output_path: str):
+    df = pd.read_csv(input_path)
     pyreadstat.write_dta(df, output_path)
