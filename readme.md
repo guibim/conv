@@ -1,5 +1,5 @@
 # Conv+ ⚙️  
-Conversor simples e direto de arquivos `.dta` (Stata) para `.csv`, acessível via Web.
+Conversor simples e direto de arquivos acessível via Web.
 
 🔗 Acesse o app: https://convplus.lovable.app  
 🖥️ API pública: https://conv-api-la6e.onrender.com
@@ -8,7 +8,7 @@ Conversor simples e direto de arquivos `.dta` (Stata) para `.csv`, acessível vi
 
 ## 🧠 Sobre o Projeto
 
-O **Conv+** é um conversor online minimalista criado para facilitar a vida de quem trabalha com dados, especialmente usuários de `.dta` (Stata) que precisam converter arquivos rapidamente para `.csv`.
+O **Conv+** é um conversor online minimalista criado para facilitar a vida de quem trabalha com dados.
 
 O projeto nasceu com propósito de **estudo, aprendizado e experimentação**, servindo como base para testar:
 
@@ -24,14 +24,13 @@ O Conv+ está **em desenvolvimento constante** e novas funcionalidades serão ad
 
 ## 🚀 Funcionalidade Ativa
 
-Atualmente o Conv+ oferece:
-
-### ✔ **DTA → CSV**
-- Upload de arquivos `.dta`
-- Conversão instantânea para `.csv`
-- Download automático do arquivo convertido
-- Operação 100% no backend FastAPI
-
+| Conversão | Descrição |
+|-----------|-----------|
+| **DTA → CSV** | Converte arquivos do Stata para CSV de forma leve e rápida |
+| **TXT → CSV** | Converte linhas de texto em coluna CSV |
+| **CSV → TXT** | Exporta o CSV como arquivo TXT formatado |
+| **CSV → JSON** | Transforma CSV tabular em JSON estruturado |
+| **JSON → CSV** | Converte lista JSON em tabela CSV |
 ---
 
 ## ⚠️ Sobre CSV → DTA (Funcionalidade temporariamente desativada)
@@ -79,7 +78,7 @@ No frontend, essa informação é exibida para o usuário no momento da convers�
 - Python + FastAPI
 - Hospedado no Render (Free Tier)
 - Endpoints:
-  - `POST /convert` — converte `.dta` → `.csv`
+  - `POST /convert` 
 
 ### **Dependências principais**
 - `fastapi`
@@ -99,15 +98,13 @@ No frontend, essa informação é exibida para o usuário no momento da convers�
 
 ### **Endpoint:**
 
-### **Campos esperados:**
-| Campo        | Tipo    | Descrição |
-|--------------|---------|-----------|
-| `file`       | arquivo | Arquivo `.dta` |
-| `from_format`| texto   | deve ser `"dta"` |
-| `to_format`  | texto   | deve ser `"csv"` |
+### Campos enviados:
+- `file`
+- `from_format`
+- `to_format`
 
 ### **Resposta:**
-Um arquivo `.csv` convertido, pronto para download.
+Um arquivo convertido, pronto para download.
 
 ---
 
