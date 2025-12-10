@@ -1,9 +1,6 @@
 import pyreadstat
-import pandas as pd
+import csv
 
-def convert_dta_to_csv(input_path: str, output_path: str):
-    """
-    Converte um arquivo .dta (Stata) para .csv
-    """
+def convert_dta_to_csv(input_path, output_path):
     df, meta = pyreadstat.read_dta(input_path)
     df.to_csv(output_path, index=False)
