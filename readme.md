@@ -1,73 +1,122 @@
-# Conv+ ⚙️
+# Conv+ ⚙️  
+Conversor simples e direto de arquivos `.dta` (Stata) para `.csv`, acessível via Web.
 
-Conversor de arquivos simples e direto, acessível via Web.
-
-🔗 Acesse o app: [https://convplus.lovable.app](https://convplus.lovable.app)
-
----
-
-## 🧠 Sobre o projeto
-
-**Conv+** é uma aplicação web minimalista que permite **converter arquivos entre os formatos `.dta` (Stata) e `.csv`**, com objetivo de tornar tarefas comuns de manipulação de dados mais simples e rápidas — direto do navegador, sem precisar instalar nada.
-
-O projeto foi criado com foco em **experimentos, aprendizado e praticidade**, e está em constante evolução com novas funcionalidades previstas (ex: PDF para imagem, compactação, etc).
+🔗 Acesse o app: https://convplus.lovable.app  
+🖥️ API pública: https://conv-api-la6e.onrender.com
 
 ---
 
-## 🚀 Funcionalidade atual
+## 🧠 Sobre o Projeto
 
-- ✅ Upload de arquivos `.dta` ou `.csv`
-- ✅ Conversão entre os dois formatos
-- ✅ Download automático do arquivo convertido
-- ✅ Interface limpa, rápida e responsiva
-- ✅ Feedback visual (status, loading, erro)
-- ✅ Aviso sobre tempo de espera inicial (cold start)
+O **Conv+** é um conversor online minimalista criado para facilitar a vida de quem trabalha com dados, especialmente usuários de `.dta` (Stata) que precisam converter arquivos rapidamente para `.csv`.
 
----
+O projeto nasceu com propósito de **estudo, aprendizado e experimentação**, servindo como base para testar:
 
-## 🧱 Estrutura do projeto
+- FastAPI
+- Deploy em Render (free tier)
+- Integração com Lovable.dev
+- Processamento de arquivos diretamente no navegador
+- UX simplificada com foco em acessibilidade e rapidez
 
-| Camada      | Tecnologia                |
-|-------------|---------------------------|
-| **Frontend** | [Lovable.dev](https://lovable.dev) - No-code/low-code builder |
-| **Backend**  | FastAPI + Python          |
-| **Hospedagem API** | [Render.com](https://render.com) |
-| **Banco de dados (futuro)** | Supabase (em fase de planejamento) |
+O Conv+ está **em desenvolvimento constante** e novas funcionalidades serão adicionadas ao longo do tempo.
 
 ---
 
-## 📡 Sobre a API
+## 🚀 Funcionalidade Ativa
 
-A API está hospedada gratuitamente em: https://conv-api-la6e.onrender.com/
+Atualmente o Conv+ oferece:
 
-
-### 📥 Endpoint disponível:
-
-- `POST /convert`  
-  Envia um arquivo `.dta` ou `.csv` e recebe o arquivo convertido.
-
-**Campos esperados:**
-- `file`: o arquivo a ser convertido
-- `from_format`: formato de origem (`dta` ou `csv`)
-- `to_format`: formato de destino (`csv` ou `dta`)
-
-**Resposta:** um arquivo convertido para download direto.
+### ✔ **DTA → CSV**
+- Upload de arquivos `.dta`
+- Conversão instantânea para `.csv`
+- Download automático do arquivo convertido
+- Operação 100% no backend FastAPI
 
 ---
 
-## 🧊 Aviso: Cold Start
+## ⚠️ Sobre CSV → DTA (Funcionalidade temporariamente desativada)
 
-> ⚠️ Como a API está hospedada em um serviço gratuito (Render), a primeira requisição após um tempo de inatividade pode levar **até 1 minuto** para responder.  
-> Esse atraso acontece apenas no primeiro uso após o app "dormir".
+A funcionalidade **CSV → DTA** foi planejada, iniciada e testada, **porém está temporariamente desativada**, e aqui está o motivo técnico:
+
+### 📌 **Justificativa técnica**
+
+Para salvar arquivos `.dta`, o pacote `pyreadstat` exige obrigatoriamente um **DataFrame real do pandas** — não aceita listas de dicionários, nem DataFrames alternativos ou “compatíveis”.
+
+Entretanto:
+
+- O **pandas não pode ser instalado no plano gratuito do Render**, pois requer dependências do sistema (compilação C, OpenBLAS, libgcc etc.)
+- O ambiente **não possui suporte para compilar essas dependências**
+- Alternativas como `pandas-lite` não funcionam, pois **não implementam estrutura interna compatível** com o formato `.dta`
+- O resultado disso é erro permanente `500 Internal Server Error` ao tentar gerar `.dta`
+
+> **Conclusão:**  
+> `CSV → DTA` **não pode ser suportado no ambiente atual (Render Free)**.  
+> A funcionalidade será reativada futuramente caso o backend migre para um ambiente com suporte completo ao pandas (Railway, Fly.io, Cloud Run etc).
+
+---
+
+## 🧊 Sobre Cold Start
+
+A API está hospedada em um ambiente gratuito (Render Free), o que significa que:
+
+- Após alguns minutos de inatividade, o servidor entra em "sleep mode".
+- Ao receber a primeira requisição novamente, ele precisa **"acordar"**, o que leva entre **20 e 60 segundos**.
+- Depois disso, a API fica rápida novamente.
+
+No frontend, essa informação é exibida para o usuário no momento da conversão.
+
+---
+
+## 🧱 Estrutura do Projeto
+
+### **Frontend**
+- Construído no **Lovable.dev**
+- Interface simples, responsiva e minimalista
+- Upload direto do navegador
+- Comunicação via `fetch()` com a API FastAPI
+
+### **Backend**
+- Python + FastAPI
+- Hospedado no Render (Free Tier)
+- Endpoints:
+  - `POST /convert` — converte `.dta` → `.csv`
+
+### **Dependências principais**
+- `fastapi`
+- `uvicorn`
+- `python-multipart`
+- `pyreadstat` (somente leitura de `.dta`)
+
+### **Futuro (Planejado)**
+- Reativar CSV → DTA
+- Converter PDF ↔ Imagem
+- Conversores adicionais (XLSX, JSON, Parquet)
+- Histórico de conversões com Supabase
+
+---
+
+## 📡 Como usar a API
+
+### **Endpoint:**
+
+### **Campos esperados:**
+| Campo        | Tipo    | Descrição |
+|--------------|---------|-----------|
+| `file`       | arquivo | Arquivo `.dta` |
+| `from_format`| texto   | deve ser `"dta"` |
+| `to_format`  | texto   | deve ser `"csv"` |
+
+### **Resposta:**
+Um arquivo `.csv` convertido, pronto para download.
 
 ---
 
 ## 🧪 Status do projeto
 
-> Este é um **projeto de estudo** e **experimento pessoal**, criado por [Guilherme Bim](https://www.linkedin.com/in/guilherme-bim).  
-> O código, layout e funcionalidades ainda estão sendo **testados, aprimorados e evoluídos com o tempo**.
+> **Conv+ é um projeto de estudo em constante aprimoramento.**  
+> Seu propósito é educativo e exploratório, e mudanças podem ocorrer com frequência.
 
-Contribuições, feedbacks e sugestões são bem-vindos!
+Feedbacks e sugestões são sempre bem-vindos!
 
 ---
 
@@ -75,7 +124,7 @@ Contribuições, feedbacks e sugestões são bem-vindos!
 
 Desenvolvido por:
 
-- GitHub: [@guibim](https://github.com/guibim)
-- LinkedIn: [Guilherme Bim](https://www.linkedin.com/in/guilherme-bim)
+- GitHub: https://github.com/guibim  
+- LinkedIn: https://www.linkedin.com/in/guilherme-bim
 
 ---
