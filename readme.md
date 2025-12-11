@@ -31,6 +31,13 @@ O Conv+ está **em desenvolvimento constante** e novas funcionalidades serão ad
 | **CSV → TXT** | Exporta o CSV como arquivo TXT formatado |
 | **CSV → JSON** | Transforma CSV tabular em JSON estruturado |
 | **JSON → CSV** | Converte lista JSON em tabela CSV |
+| **CSV → XML** | Converte conteúdo tabular de CSV em estrutura XML hierárquica |
+| **XML → CSV** | Transforma elementos XML repetitivos em tabela CSV |
+| **CSV → HTML** | Gera uma tabela HTML completa baseada nos dados do CSV |
+| **HTML → TXT** | Extrai apenas o texto legível de um arquivo HTML |
+| **TXT → JSON** | Converte cada linha de um arquivo TXT em um item de lista JSON |
+| **JSON → TXT** | Converte uma lista JSON em um arquivo TXT com um item por linha |
+
 ---
 
 ## ⚠️ Sobre CSV → DTA (Funcionalidade temporariamente desativada)
