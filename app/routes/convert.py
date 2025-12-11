@@ -5,22 +5,38 @@ import os
 import uuid
 import tempfile
 
-
+#0.1
 from app.services.dta_to_csv import convert_dta_to_csv
 from app.services.txt_to_csv import convert_txt_to_csv
 from app.services.csv_to_txt import convert_csv_to_txt
 from app.services.csv_to_json import convert_csv_to_json
 from app.services.json_to_csv import convert_json_to_csv
+#0.2 
+from app.services.csv_to_xml import convert_csv_to_xml
+from app.services.xml_to_csv import convert_xml_to_csv
+from app.services.csv_to_html import convert_csv_to_html
+from app.services.html_to_txt import convert_html_to_txt
+from app.services.txt_to_json import convert_txt_to_json
+from app.services.json_to_txt import convert_json_to_txt
 
 router = APIRouter()
 
 
 conversion_map = {
+    #0.1
     ("dta", "csv"): convert_dta_to_csv,
     ("txt", "csv"): convert_txt_to_csv,
     ("csv", "txt"): convert_csv_to_txt,
     ("csv", "json"): convert_csv_to_json,
     ("json", "csv"): convert_json_to_csv,
+    #0.2
+    ("csv", "xml"): convert_csv_to_xml,
+    ("xml", "csv"): convert_xml_to_csv,
+    ("csv", "html"): convert_csv_to_html,
+    ("html", "txt"): convert_html_to_txt,
+    ("txt", "json"): convert_txt_to_json,
+    ("json", "txt"): convert_json_to_txt,
+    
 }
 
 
