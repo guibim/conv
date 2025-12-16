@@ -1,134 +1,139 @@
 # Conv+ ⚙️  
-Conversor simples e direto de arquivos acessível via Web.
+A lightweight, web-based file conversion service.
 
-🔗 Acesse o app: https://convplus.lovable.app  
-🖥️ API pública: https://conv-api-la6e.onrender.com
-
----
-
-## 🧠 Sobre o Projeto
-
-O **Conv+** é um conversor online minimalista criado para facilitar a vida de quem trabalha com dados.
-
-O projeto nasceu com propósito de **estudo, aprendizado e experimentação**, servindo como base para testar:
-
-- FastAPI
-- Deploy em Render (free tier)
-- Integração com Lovable.dev
-- Processamento de arquivos diretamente no navegador
-- UX simplificada com foco em acessibilidade e rapidez
-
-O Conv+ está **em desenvolvimento constante** e novas funcionalidades serão adicionadas ao longo do tempo.
+🔗 Web application: https://convplus.lovable.app  
+🖥️ Public API: https://conv-api-la6e.onrender.com
 
 ---
 
-## 🚀 Funcionalidade Ativa
+## 🧠 Project Overview
 
-| Conversão | Descrição |
-|-----------|-----------|
-| **DTA → CSV** | Converte arquivos do Stata para CSV de forma leve e rápida |
-| **TXT → CSV** | Converte linhas de texto em coluna CSV |
-| **CSV → TXT** | Exporta o CSV como arquivo TXT formatado |
-| **CSV → JSON** | Transforma CSV tabular em JSON estruturado |
-| **JSON → CSV** | Converte lista JSON em tabela CSV |
-| **CSV → XML** | Converte conteúdo tabular de CSV em estrutura XML hierárquica |
-| **XML → CSV** | Transforma elementos XML repetitivos em tabela CSV |
-| **CSV → HTML** | Gera uma tabela HTML completa baseada nos dados do CSV |
-| **HTML → TXT** | Extrai apenas o texto legível de um arquivo HTML |
-| **TXT → JSON** | Converte cada linha de um arquivo TXT em um item de lista JSON |
-| **JSON → TXT** | Converte uma lista JSON em um arquivo TXT com um item por linha |
+**Conv+** is a minimalist online file conversion tool designed to simplify common data format transformations.
 
----
+From a user perspective, Conv+ allows files to be uploaded through a web interface and converted into other formats in a fast and accessible way.  
+From a technical perspective, the project serves as a **learning and experimentation platform** focused on modern backend APIs, deployment constraints, and client–server integration.
 
-## ⚠️ Sobre CSV → DTA (Funcionalidade temporariamente desativada)
+The project was created to explore and validate concepts such as:
 
-A funcionalidade **CSV → DTA** foi planejada, iniciada e testada, **porém está temporariamente desativada**, e aqui está o motivo técnico:
+- API development with **FastAPI**
+- Deployment on constrained environments (Render free tier)
+- Frontend–backend integration using **Lovable.dev**
+- Browser-based file uploads and downloads
+- Simple, accessible UX with minimal user friction
 
-### 📌 **Justificativa técnica**
-
-Para salvar arquivos `.dta`, o pacote `pyreadstat` exige obrigatoriamente um **DataFrame real do pandas** — não aceita listas de dicionários, nem DataFrames alternativos ou “compatíveis”.
-
-Entretanto:
-
-- O **pandas não pode ser instalado no plano gratuito do Render**, pois requer dependências do sistema (compilação C, OpenBLAS, libgcc etc.)
-- O ambiente **não possui suporte para compilar essas dependências**
-- Alternativas como `pandas-lite` não funcionam, pois **não implementam estrutura interna compatível** com o formato `.dta`
-- O resultado disso é erro permanente `500 Internal Server Error` ao tentar gerar `.dta`
-
-> **Conclusão:**  
-> `CSV → DTA` **não pode ser suportado no ambiente atual (Render Free)**.  
-> A funcionalidade será reativada futuramente caso o backend migre para um ambiente com suporte completo ao pandas (Railway, Fly.io, Cloud Run etc).
+Conv+ is **actively evolving**, and new features and improvements are introduced incrementally.
 
 ---
 
-## 🧊 Sobre Cold Start
+## 🚀 Supported Conversions
 
-A API está hospedada em um ambiente gratuito (Render Free), o que significa que:
+The following conversions are currently supported through the `/convert` API endpoint:
 
-- Após alguns minutos de inatividade, o servidor entra em "sleep mode".
-- Ao receber a primeira requisição novamente, ele precisa **"acordar"**, o que leva entre **20 e 60 segundos**.
-- Depois disso, a API fica rápida novamente.
-
-No frontend, essa informação é exibida para o usuário no momento da conversão.
+| Conversion | Description |
+|-----------|-------------|
+| **DTA → CSV** | Converts Stata `.dta` files into CSV format |
+| **TXT → CSV** | Converts plain text lines into a CSV column |
+| **CSV → TXT** | Exports CSV data as a formatted text file |
+| **CSV → JSON** | Converts tabular CSV data into structured JSON |
+| **JSON → CSV** | Converts a JSON list into a CSV table |
+| **CSV → XML** | Transforms CSV data into a hierarchical XML structure |
+| **XML → CSV** | Flattens repetitive XML elements into CSV format |
+| **CSV → HTML** | Generates an HTML table from CSV data |
+| **HTML → TXT** | Extracts readable text content from an HTML file |
+| **TXT → JSON** | Converts each line of a TXT file into a JSON array item |
+| **JSON → TXT** | Converts a JSON array into a TXT file (one item per line) |
 
 ---
 
-## 🧱 Estrutura do Projeto
+## ⚠️ CSV → DTA (Temporarily Disabled)
+
+The **CSV → DTA** conversion was designed, implemented, and validated during development but is currently **disabled** due to infrastructure limitations.
+
+### 📌 Technical Explanation
+
+Generating `.dta` files requires the `pyreadstat` library, which in turn **strictly depends on a fully-featured pandas DataFrame**. The library does not accept alternative data structures or partial implementations.
+
+However:
+
+- The **Render free tier does not support installing pandas**, as it depends on native system libraries (C extensions, OpenBLAS, libgcc, etc.)
+- The execution environment **does not allow compiling these dependencies**
+- Lightweight alternatives (e.g., `pandas-lite`) are insufficient because they **do not implement the internal structures required by the `.dta` format**
+- As a result, attempts to generate `.dta` files consistently fail with a `500 Internal Server Error`
+
+> **Conclusion:**  
+> The `CSV → DTA` conversion cannot be reliably supported in the current hosting environment.  
+> This feature may be re-enabled if the backend is migrated to an environment with full pandas support (e.g., Railway, Fly.io, Google Cloud Run).
+
+---
+
+## 🧊 Cold Start Behavior
+
+The backend API is hosted on a free-tier platform, which introduces a **cold start behavior**:
+
+- After a period of inactivity, the server enters a suspended state
+- The first request after suspension may take **20–60 seconds** to complete while the server initializes
+- Subsequent requests are processed normally with low latency
+
+This behavior is communicated to users directly in the frontend to avoid confusion during conversions.
+
+---
+
+## 🧱 Technical Architecture
 
 ### **Frontend**
-- Construído no **Lovable.dev**
-- Interface simples, responsiva e minimalista
-- Upload direto do navegador
-- Comunicação via `fetch()` com a API FastAPI
+- Built with **Lovable.dev**
+- Lightweight, responsive, and minimal UI
+- Files are uploaded directly from the browser
+- Communication with the backend via standard HTTP requests (`fetch`)
 
 ### **Backend**
-- Python + FastAPI
-- Hospedado no Render (Free Tier)
-- Endpoints:
-  - `POST /convert` 
+- **Python + FastAPI**
+- Hosted on Render (Free Tier)
+- Core endpoint:
+  - `POST /convert`
 
-### **Dependências principais**
+### **Core Dependencies**
 - `fastapi`
 - `uvicorn`
 - `python-multipart`
-- `pyreadstat` (somente leitura de `.dta`)
+- `pyreadstat` (read-only support for `.dta` files)
 
-### **Futuro (Planejado)**
-- Reativar CSV → DTA
-- Converter PDF ↔ Imagem
-- Conversores adicionais (XLSX, JSON, Parquet)
-- Histórico de conversões com Supabase
-
----
-
-## 📡 Como usar a API
-
-### **Endpoint:**
-
-### Campos enviados:
-- `file`
-- `from_format`
-- `to_format`
-
-### **Resposta:**
-Um arquivo convertido, pronto para download.
+### **Planned Improvements**
+- Re-enable CSV → DTA in a supported environment
+- PDF ↔ Image conversions
+- Additional data formats (XLSX, JSON, Parquet)
+- Conversion history and persistence using Supabase
 
 ---
 
-## 🧪 Status do projeto
+## 📡 API Usage
 
-> **Conv+ é um projeto de estudo em constante aprimoramento.**  
-> Seu propósito é educativo e exploratório, e mudanças podem ocorrer com frequência.
+### **Endpoint**
+### **Request Parameters**
+- `file` — input file
+- `from_format` — source format
+- `to_format` — target format
 
-Feedbacks e sugestões são sempre bem-vindos!
+### **Response**
+The converted file, returned directly and ready for download.
 
 ---
 
-## 👤 Créditos
+## 🧪 Project Status
 
-Desenvolvido por:
+> **Conv+ is an educational and experimental project under continuous refinement.**  
+> Its primary goal is learning and validation of technical concepts, and changes may occur frequently.
+
+Feedback and contributions are welcome.
+
+---
+
+## 👤 Author
+
+Developed by:
 
 - GitHub: https://github.com/guibim  
 - LinkedIn: https://www.linkedin.com/in/guilherme-bim
 
 ---
+
