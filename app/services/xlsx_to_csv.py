@@ -1,6 +1,6 @@
 import zipfile
 import io
-import re
+import csv
 from xml.etree import ElementTree as ET
 
 def xlsx_to_csv(xlsx_bytes: bytes) -> bytes:

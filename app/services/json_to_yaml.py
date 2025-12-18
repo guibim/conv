@@ -1,5 +1,22 @@
+import json
+
+
+def _decode_json_bytes(json_bytes: bytes):
+    encodings = ["utf-8", "utf-8-sig", "windows-1252", "latin-1"]
+    last_error = None
+
+    for encoding in encodings:
+        try:
+            return json.loads(json_bytes.decode(encoding))
+        except UnicodeDecodeError as error:
+            last_error = error
+            continue
+
+    raise UnicodeDecodeError("", b"", 0, 1, "Falha ao decodificar JSON") from last_error
+
+
 def json_to_yaml(json_bytes: bytes) -> bytes:
-    data = json.loads(json_bytes)
+    data = _decode_json_bytes(json_bytes)
 
     def dump(obj, indent=0):
         space = "  " * indent

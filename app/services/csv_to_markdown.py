@@ -1,12 +1,16 @@
-def csv_to_markdown(csv_bytes: bytes) -> bytes:
-    csv_text = csv_bytes.decode("utf-8", errors="ignore")
-    reader = list(csv.reader(io.StringIO(csv_text)))
+from app.services.utils.csv_reader import read_csv_with_fallback
 
-    if not reader:
+
+def csv_to_markdown(csv_bytes: bytes) -> bytes:
+    rows = read_csv_with_fallback(csv_bytes)
+
+    if not rows:
         return b""
 
-    header = reader[0]
-    body = reader[1:]
+    header, *body = rows
+
+    if not header:
+        return b""
 
     md = []
     md.append("| " + " | ".join(header) + " |")

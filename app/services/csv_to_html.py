@@ -1,9 +1,8 @@
-import csv
+from app.services.utils.csv_reader import read_csv_with_fallback
+
 
 def convert_csv_to_html(input_path, output_path):
-    with open(input_path, newline='', encoding='utf-8') as csvfile:
-        reader = csv.reader(csvfile)
-        rows = list(reader)
+    rows = read_csv_with_fallback(input_path)
 
     html = "<html><body><table border='1'>\n"
 
