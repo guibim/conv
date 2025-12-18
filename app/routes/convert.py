@@ -22,6 +22,7 @@ from app.services.csv_to_html import convert_csv_to_html
 from app.services.html_to_txt import convert_html_to_txt
 from app.services.txt_to_json import convert_txt_to_json
 from app.services.json_to_txt import convert_json_to_txt
+from app.services.txt_to_xml import convert_txt_to_xml
 
 # ===== 0.3 =====
 from app.services.csv_to_xlsx import convert_csv_to_xlsx
@@ -56,6 +57,7 @@ conversion_map = {
     ("html", "txt"): convert_html_to_txt,
     ("txt", "json"): convert_txt_to_json,
     ("json", "txt"): convert_json_to_txt,
+    ("txt", "xml"): convert_txt_to_xml,
 
     # ===== 0.3 =====
     ("csv", "xlsx"): convert_csv_to_xlsx,
@@ -104,6 +106,10 @@ async def convert_file(
         conversion_function(input_path, output_path)
 
     except CSVEncodingError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except ValueError as e:
+        # erros de validação de entrada (ex: JSON inválido p/ CSV)
         raise HTTPException(status_code=400, detail=str(e))
 
     except Exception as e:
