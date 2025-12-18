@@ -2,10 +2,10 @@
 set -o errexit
 
 echo "Updating system packages..."
-apt-get update
+sudo apt-get update
 
 echo "Installing ExifTool..."
-apt-get install -y exiftool
+sudo apt-get install -y exiftool
 
 echo "Installing Python dependencies..."
 pip install --upgrade pip
