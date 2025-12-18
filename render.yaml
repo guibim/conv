@@ -1,16 +1,10 @@
 services:
   - type: web
-    name: conv-extract-img
+    name: extract-img-api
     env: python
     plan: free
-    rootDir: extract-img-api
-
     buildCommand: |
       pip install --upgrade pip
       pip install -r requirements.txt
-
     startCommand: |
-      uvicorn extract_img:app --host 0.0.0.0 --port 10000
-
-    aptPackages:
-      - libimage-exiftool-perl
+      uvicorn extract_img:app --host 0.0.0.0 --port $PORT
