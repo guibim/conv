@@ -1,5 +1,19 @@
 from html.parser import HTMLParser
 
+
+def _decode_html(html_bytes: bytes) -> str:
+    encodings = ["utf-8", "utf-8-sig", "windows-1252", "latin-1"]
+    last_error = None
+
+    for encoding in encodings:
+        try:
+            return html_bytes.decode(encoding)
+        except UnicodeDecodeError as error:
+            last_error = error
+            continue
+
+    raise UnicodeDecodeError("", b"", 0, 1, "Falha ao decodificar HTML") from last_error
+
 class SimpleHTMLToMarkdown(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -26,5 +40,5 @@ class SimpleHTMLToMarkdown(HTMLParser):
 
 def html_to_markdown(html_bytes: bytes) -> bytes:
     parser = SimpleHTMLToMarkdown()
-    parser.feed(html_bytes.decode("utf-8", errors="ignore"))
+    parser.feed(_decode_html(html_bytes))
     return "".join(parser.out).strip().encode("utf-8")
