@@ -33,6 +33,12 @@ from app.services.json_to_xml import convert_json_to_xml
 from app.services.xml_to_json import convert_xml_to_json
 from app.services.json_to_yaml import convert_json_to_yaml
 
+# ===== IFC (BIM) =====
+from app.services.ifc_to_csv import convert_ifc_to_csv
+from app.services.ifc_to_json import convert_ifc_to_json
+from app.services.ifc_to_html import convert_ifc_to_html
+from app.services.ifc_to_txt import convert_ifc_to_txt
+
 router = APIRouter()
 
 conversion_map = {
@@ -60,6 +66,12 @@ conversion_map = {
     ("json", "xml"): convert_json_to_xml,
     ("xml", "json"): convert_xml_to_json,
     ("json", "yaml"): convert_json_to_yaml,
+
+    # ===== IFC (BIM) =====
+    ("ifc", "csv"): convert_ifc_to_csv,
+    ("ifc", "json"): convert_ifc_to_json,
+    ("ifc", "html"): convert_ifc_to_html,
+    ("ifc", "txt"): convert_ifc_to_txt,
 }
 
 @router.post("/convert")
