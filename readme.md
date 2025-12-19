@@ -1,8 +1,9 @@
 # Conv+ ⚙️  
 A lightweight, web-based file conversion service.
 
-🔗 Web application: https://convplus.lovable.app  
+🔗 Web application: https://guibim.github.io/conv-site
 🖥️ Public API: https://conv-api-la6e.onrender.com
+🖥️ Public API-2 (Metadata Extract): https://conv-yw21.onrender.com
 
 ---
 
