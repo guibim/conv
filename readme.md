@@ -1,95 +1,81 @@
 # Conv
 
-Conv is a file conversion platform designed as a lightweight web service and as a quality-oriented engineering project. It combines format transformation workflows, API integration, deployment constraints, and validation concerns in a single repository.
+Conv is a file conversion platform built as a lightweight web service and as a QA-oriented engineering project. The repository combines file transformation workflows, API design, deployment constraints, validation assets, and refactoring work across multiple runtime surfaces.
 
-From a product perspective, the platform provides browser-based file conversion with minimal user friction. From an engineering perspective, the project is used to exercise API contract design, encoding robustness, negative-path handling, deployment behavior on free-tier infrastructure, and cross-stack integration between frontend and backend services.
+The project is intentionally relevant from a quality engineering perspective: it deals with imperfect inputs, encoding variability, conversion consistency, deploy-time limitations, and public-facing API behavior under constrained infrastructure.
 
-## Project Positioning
-
-This repository should be read as more than a simple converter demo.
-
-It is a practical QA-focused project that touches multiple concerns:
-
-- backend API design with FastAPI
-- file parsing and transformation across heterogeneous formats
-- browser-to-API integration
-- constrained deployment environments on Render
-- functional validation through Postman collections
-- error handling around malformed files, unsupported mappings, and encoding issues
-- secondary metadata extraction workflows for image files
-
-The current direction of the project is to keep the runtime footprint small while improving technical consistency, observability, and reliability.
-
-## Public Endpoints
+## Current Public Endpoints
 
 - Web application: [https://guibim.github.io/conv-site](https://guibim.github.io/conv-site)
-- Main conversion API: [https://conv-api-la6e.onrender.com](https://conv-api-la6e.onrender.com)
+- Main API v2: [https://conv-nyst.onrender.com](https://conv-nyst.onrender.com)
+- Legacy conversion API: [https://conv-api-la6e.onrender.com](https://conv-api-la6e.onrender.com)
 - Image metadata API: [https://conv-yw21.onrender.com](https://conv-yw21.onrender.com)
 
 ## Repository Scope
 
-This repository currently contains four relevant areas:
+This repository currently contains five relevant areas:
 
-1. Main conversion backend in [`app`](app)
-2. Independent image metadata extraction API in [`extract-img-api`](extract-img-api)
-3. API validation assets in [`postman`](postman)
-4. Deployment descriptors such as [`render.yaml`](render.yaml) and [`render-build.sh`](render-build.sh)
+1. Legacy conversion backend in [`app`](app)
+2. New hardened conversion backend in [`api-v2`](api-v2)
+3. Independent image metadata extraction API in [`extract-img-api`](extract-img-api)
+4. API validation assets in [`postman`](postman)
+5. Refactoring and architecture material in [`docs`](docs)
 
-The frontend is referenced by this project but is hosted separately.
+The frontend is referenced by this repository but is hosted separately.
 
 ## Architecture Overview
 
-### Main conversion service
+### `api-v2`
 
-The primary service is implemented with FastAPI and exposes a conversion-oriented HTTP interface. The current application entry point is [`app/main.py`](app/main.py), and the main request flow is concentrated in [`app/routes/convert.py`](app/routes/convert.py).
+The new production-oriented backend lives in [`api-v2`](api-v2). This is the API that should be used as the main baseline for ongoing work.
 
-Current responsibilities:
+Core characteristics:
 
-- receive multipart uploads
-- validate source and target format pairing
-- persist temporary input and output artifacts
-- dispatch to a format-specific conversion handler
-- return the converted file as a download response
+- FastAPI-based HTTP service
+- explicit conversion registry
+- normalized conversion contract
+- upload size limits
+- cleanup of temporary artifacts
+- hardened XML parsing with `defusedxml`
+- safer HTML generation for `csv -> html`
+- operationally safer defaults for CORS and error handling
 
-### Image metadata extraction service
+Key files:
 
-The repository also includes a secondary FastAPI service at [`extract-img-api/extract_img.py`](extract-img-api/extract_img.py). This component is intentionally separate from the main conversion API and focuses on metadata extraction from image uploads using Pillow and ExifRead.
+- entrypoint: [`api-v2/app/main.py`](api-v2/app/main.py)
+- routes: [`api-v2/app/routes/convert.py`](api-v2/app/routes/convert.py)
+- registry: [`api-v2/app/registry.py`](api-v2/app/registry.py)
+- converters: [`api-v2/app/converters`](api-v2/app/converters)
 
-### Cross-stack context
+### Legacy backend
 
-The project spans multiple layers even though they are not all implemented in this repository:
+The original backend remains in [`app`](app) as legacy implementation and historical reference. It should not be treated as the primary architectural baseline going forward.
 
-- frontend UX and file upload flow
-- backend API behavior
-- deployment/runtime constraints
-- API contract validation tooling
-- data-format interoperability
+### Image metadata API
 
-This cross-stack nature is one of the reasons the project is useful from a QA and systems-validation perspective.
+The EXIF-focused service remains separate in [`extract-img-api`](extract-img-api). It is a distinct API surface and should be treated as an auxiliary service rather than part of the core conversion runtime.
 
-## Quality Engineering Focus
+## Main API v2 Endpoints
 
-Conv is particularly relevant as a QA-facing project because its value is not only in successful conversions, but also in predictable behavior under imperfect inputs and infrastructure constraints.
+The new API exposes:
 
-Key quality themes in this repository:
+- `GET /`
+- `GET /health`
+- `GET /conversions`
+- `POST /convert`
 
-- contract validation for multipart API requests
-- boundary checks for source and target format combinations
-- verification of file extension and declared format alignment
-- encoding tolerance for text-based formats such as CSV, TXT, HTML, and JSON
-- handling of malformed or structurally incompatible content
-- regression risk introduced by adding new converters incrementally
-- operational behavior under Render cold starts
+Example request model for `POST /convert`:
 
-This makes the project a useful case study in functional QA, API QA, and reliability-focused refactoring.
+- `file`: uploaded file
+- `from_format`: declared source format
+- `to_format`: declared target format
 
-## Current Supported Conversion Paths
+The response is the converted file returned directly as a downloadable artifact.
 
-The repository currently includes handlers for the following conversion families:
+## Current API v2 Conversion Coverage
 
-### Core text and tabular flows
+The current `api-v2` registry includes:
 
-- `dta -> csv`
 - `txt -> csv`
 - `csv -> txt`
 - `csv -> json`
@@ -101,126 +87,119 @@ The repository currently includes handlers for the following conversion families
 - `txt -> json`
 - `json -> txt`
 - `txt -> xml`
-
-### Additional implemented conversion modules
-
-The codebase also contains modules for additional transformations and export-oriented outputs, including:
-
-- `csv -> xlsx`
-- `xlsx -> csv`
-- `csv -> md`
-- `html -> md`
 - `json -> xml`
 - `xml -> json`
-- `json -> yaml`
-- `csv -> sql`
-- `ifc -> csv`
-- `ifc -> json`
-- `ifc -> html`
-- `ifc -> txt`
 
-Important note:
+The live list can also be queried directly from:
 
-The repository is currently undergoing architectural standardization. Some newer conversion modules exist in code but are not yet fully normalized under a single execution contract. The refactoring plan for this standardization is documented in [`docs/refatoracao-conversoes.md`](docs/refatoracao-conversoes.md).
+- [https://conv-nyst.onrender.com/conversions](https://conv-nyst.onrender.com/conversions)
 
-## Format Limitations and Technical Constraints
+## Quality Engineering Positioning
 
-### CSV to DTA
+Conv is useful as a QA-facing project because it exercises several system-quality concerns at once:
 
-`csv -> dta` is not a reliable public capability in the current hosting setup.
+- multipart API contract validation
+- source and target format compatibility checks
+- file extension and declared format alignment
+- text decoding under multiple encodings
+- malformed payload handling
+- regression risk when introducing new converters
+- infrastructure-aware reliability decisions
+- public API behavior under constrained hosting
 
-The implementation depends on `pyreadstat` and, in practice, on a fully compatible pandas-style DataFrame workflow. That requirement conflicts with the constraints of the current free-tier deployment model, where heavyweight native dependencies are difficult or impossible to support consistently.
+This is not just a format conversion demo. It is a compact platform for validating technical correctness under realistic API and deployment conditions.
 
-For that reason, `csv -> dta` should be treated as infrastructure-blocked rather than production-ready.
+## Deployment Model
 
-### XML and HTML transformations
+The project is hosted on **Render Free Tier**. This has direct impact on both user experience and technical design.
 
-Some format pairs are intentionally simple and should not be interpreted as full semantic transformations.
+Operational implications:
 
-- `xml -> csv` assumes repetitive, flattenable XML structures
-- `html -> txt` is a lightweight text extraction path, not a browser-grade DOM rendering pipeline
-- `html -> md` is a simplified conversion path with limited markup fidelity
+- the service may experience **cold start** after inactivity
+- the first request may take noticeably longer than subsequent ones
+- dependency choices must remain compatible with free-tier runtime constraints
+- some format pairs cannot be safely exposed under the current environment
 
-### IFC exports
+This cold start behavior should be considered expected platform behavior, not an application defect by itself.
 
-The IFC-related modules behave more like summary and reporting outputs than complete model conversions. They are useful for inspection and lightweight reporting, but they should not be presented as full BIM transformation pipelines.
+## Render Setup for `api-v2`
 
-## QA Assets in the Repository
+The new API is designed to be deployed from this same repository using:
 
-The repository already contains validation-oriented assets in [`postman`](postman):
+- Branch: `master`
+- Root Directory: `api-v2`
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
-- Postman collection for `/convert`
-- environment file for repeatable execution
-- smoke-test oriented request coverage
+Recommended environment variables:
 
-These assets are particularly relevant from a QA standpoint because they provide a baseline for:
+- `ALLOWED_ORIGINS=https://guibim.github.io`
+- `MAX_UPLOAD_BYTES=10485760`
+- `CORS_ALLOW_CREDENTIALS=false`
 
-- endpoint contract verification
-- response status validation
-- response time monitoring
-- happy-path regression checks
+## Technical Stacks
 
-## Deployment and Runtime Considerations
-
-The project is deployed on Render free tier infrastructure. This has direct quality implications and should be considered part of the system behavior, not an incidental detail.
-
-Known operational characteristics:
-
-- cold starts may delay the first request after inactivity
-- infrastructure constraints affect dependency strategy
-- deployment choices directly influence which conversions can be safely exposed
-
-The current [`render.yaml`](render.yaml) is configured for the image metadata API, while the main conversion backend and public endpoints represent a broader project context.
-
-## Technology Stack
-
-Primary technologies currently visible in the repository:
+Primary technologies currently present in the repository:
 
 - Python
 - FastAPI
 - Uvicorn
 - python-multipart
+- defusedxml
 - pyreadstat
 - Pillow
 - ExifRead
 - Postman
 - Render
 
-Referenced or adjacent technologies in the broader project context:
+Adjacent or externally referenced stack components:
 
-- Lovable.dev for frontend generation/integration
-- browser `fetch` workflows for upload/download handling
+- Lovable.dev
+- browser-based upload/download flows via `fetch`
+- GitHub Pages for frontend hosting
+
+## Current Refactoring Material
+
+The repository already includes dedicated refactoring guidance in:
+
+- [`docs/refatoracao-conversoes.md`](docs/refatoracao-conversoes.md)
+
+This document captures the standardization plan for conversion contracts, registry structure, migration strategy, and classification of stable versus problematic formats.
+
+## Known Frontend Inconsistencies
+
+The currently published frontend was checked against the live bundle and the current backend state. The following inconsistencies are visible today:
+
+- the frontend still uses the older `Conv+` branding and title while the repository and new backend documentation now use `Conv`
+- the frontend still references legacy conversion routes and capabilities that are broader than the `api-v2` registry
+- the site still includes navigation for routes such as `dta -> csv`, `csv -> sql`, `csv -> markdown`, `html -> markdown`, `json -> yaml`, and IFC-related outputs, while these are not part of the current `api-v2` production contract
+- the metadata extractor still points to the legacy image metadata API instead of being documented as a secondary service
+- the About page text still describes the older modular service model and a broader set of use cases than the new hardened API currently exposes
+
+Important limitation:
+
+- frontend code was not available in this repository for direct code review
+- the frontend verification was performed against the published application artifact and downloaded bundle, not its source repository
+
+## Documentation Companion
+
+For a more complete technical reference, see:
+
+- [`contexto_master.md`](contexto_master.md)
+
+That file centralizes the master context of the project, active stacks, deployment model, current APIs, and practical usage notes.
 
 ## Engineering Status
 
-The project is active and under refactoring.
+The project is active and under structured refactoring.
 
-The current technical priority is not to add as many conversions as possible, but to improve the consistency of the conversion contract, the maintainability of the codebase, and the trustworthiness of the documented feature set.
+The current technical direction is:
 
-That work includes:
-
-- standardizing converter interfaces
-- separating HTTP concerns from conversion logic
-- classifying conversions by stability level
-- improving documentation accuracy
-- strengthening testability and regression coverage
-
-The technical blueprint for that effort is available in [`docs/refatoracao-conversoes.md`](docs/refatoracao-conversoes.md).
-
-## Why This Project Matters for QA
-
-For a QA-oriented portfolio or technical narrative, Conv is useful because it shows interaction between business behavior and engineering constraints.
-
-It demonstrates work around:
-
-- API contract verification
-- file-format compatibility analysis
-- failure-mode documentation
-- deployment-aware quality decisions
-- data parsing under real-world encoding variance
-- validation of user-facing behavior against backend limitations
-
-In that sense, the project is not just a converter. It is a compact system for validating reliability across format handling, infrastructure limits, and integration surfaces.
+- keep the runtime lightweight
+- align documentation with runtime reality
+- use `api-v2` as the new primary backend baseline
+- reduce security and availability risks present in the legacy API
+- improve testability and operational clarity
 
 ## Author
 
