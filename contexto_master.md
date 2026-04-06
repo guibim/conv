@@ -20,11 +20,13 @@ Main endpoints:
 - `GET /health`
 - `GET /conversions`
 - `POST /convert`
+- `POST /extract-metadata`
 
 Key implementation files:
 
 - [`api-v2/app/main.py`](api-v2/app/main.py)
 - [`api-v2/app/routes/convert.py`](api-v2/app/routes/convert.py)
+- [`api-v2/app/routes/metadata.py`](api-v2/app/routes/metadata.py)
 - [`api-v2/app/registry.py`](api-v2/app/registry.py)
 
 ### 2. Legacy API
@@ -40,6 +42,11 @@ This code should not be treated as the long-term primary backend.
 - folder: [`extract-img-api`](extract-img-api)
 - live URL: [https://conv-yw21.onrender.com](https://conv-yw21.onrender.com)
 - role: secondary API for image metadata extraction
+
+Important note:
+
+- equivalent image metadata extraction is now available inside `api-v2`
+- the long-term direction can be to consolidate usage into the main API and phase this separate surface out later
 
 ### 4. Frontend
 
@@ -109,6 +116,7 @@ Core design principles:
 
 - single conversion contract
 - explicit conversion registry
+- metadata extraction inside the same main API
 - safer upload handling
 - bounded input size
 - temp file cleanup

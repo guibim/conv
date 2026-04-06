@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routes.convert import router as convert_router
+from app.routes.metadata import router as metadata_router
 
 
 app = FastAPI(
@@ -20,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(convert_router)
+app.include_router(metadata_router)
 
 
 @app.get("/")
@@ -30,4 +32,5 @@ def root() -> dict[str, object]:
         "docs": "/docs",
         "health": "/health",
         "conversions": "/conversions",
+        "extract_metadata": "/extract-metadata",
     }

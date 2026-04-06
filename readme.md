@@ -53,7 +53,7 @@ The original backend remains in [`app`](app) as legacy implementation and histor
 
 ### Image metadata API
 
-The EXIF-focused service remains separate in [`extract-img-api`](extract-img-api). It is a distinct API surface and should be treated as an auxiliary service rather than part of the core conversion runtime.
+The EXIF-focused service remains separate in [`extract-img-api`](extract-img-api). It should now be treated as a legacy or transitional surface, because equivalent image metadata extraction capability has been incorporated into `api-v2`.
 
 ## Main API v2 Endpoints
 
@@ -63,6 +63,7 @@ The new API exposes:
 - `GET /health`
 - `GET /conversions`
 - `POST /convert`
+- `POST /extract-metadata`
 
 Example request model for `POST /convert`:
 
@@ -71,6 +72,21 @@ Example request model for `POST /convert`:
 - `to_format`: declared target format
 
 The response is the converted file returned directly as a downloadable artifact.
+
+The same API also supports structured image metadata extraction through `POST /extract-metadata`.
+
+Current metadata extraction output includes:
+
+- file information
+- file hashes
+- content type
+- image dimensions
+- image mode and format
+- animation and frame hints when available
+- Pillow-derived EXIF metadata
+- ExifRead-derived EXIF and maker-note style metadata
+- GPS coordinates when present
+- diagnostics and extraction warnings
 
 ## Current API v2 Conversion Coverage
 
@@ -173,7 +189,7 @@ The currently published frontend was checked against the live bundle and the cur
 - the frontend still uses the older `Conv+` branding and title while the repository and new backend documentation now use `Conv`
 - the frontend still references legacy conversion routes and capabilities that are broader than the `api-v2` registry
 - the site still includes navigation for routes such as `dta -> csv`, `csv -> sql`, `csv -> markdown`, `html -> markdown`, `json -> yaml`, and IFC-related outputs, while these are not part of the current `api-v2` production contract
-- the metadata extractor still points to the legacy image metadata API instead of being documented as a secondary service
+- the frontend metadata flow still points to the legacy image metadata API instead of the new `api-v2` metadata endpoint
 - the About page text still describes the older modular service model and a broader set of use cases than the new hardened API currently exposes
 
 Important limitation:
