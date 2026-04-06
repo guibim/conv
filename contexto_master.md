@@ -51,8 +51,16 @@ Important note:
 ### 4. Frontend
 
 - live URL: [https://guibim.github.io/conv-site](https://guibim.github.io/conv-site)
+- source repository: [https://github.com/guibim/conv-site](https://github.com/guibim/conv-site)
 - hosted separately from this repository
-- current verification source: published bundle, not source code in-repo
+
+Current frontend behavior:
+
+- uses `api-v2` as the main backend for conversion
+- uses `POST /extract-metadata` from `api-v2` for image metadata extraction
+- exposes only the conversion flows currently supported by the `api-v2` registry
+- presents Render Free Tier and cold start explicitly in user-facing copy
+- uses `Conv` branding aligned with the current project naming
 
 ## Stacks and Tooling
 
@@ -234,20 +242,18 @@ The `api-v2` implementation was created specifically to improve this baseline.
 
 ## Frontend Status and Inconsistencies
 
-The published frontend is currently not fully aligned with the `api-v2` runtime.
+The frontend has been refactored in its own repository and is now aligned with the `api-v2` runtime baseline.
 
-Observed inconsistencies from published artifact inspection:
+Current alignment status:
 
-- frontend branding still presents the product as `Conv+` rather than the newer repository-level naming `Conv`
-- frontend route inventory is broader than the active `api-v2` conversion registry
-- frontend About page still describes older architecture and broader capabilities
-- some public-facing messaging still implies support for formats not currently exposed by `api-v2`
-- frontend still references the secondary metadata API directly as part of user-facing flow
+- main conversion flow points to `https://conv-nyst.onrender.com/convert`
+- metadata extraction points to `https://conv-nyst.onrender.com/extract-metadata`
+- unsupported or non-promoted formats are no longer exposed as active public routes
+- product copy and About page were updated to reflect the current architecture and QA-oriented positioning
 
-Important limitation:
+Ongoing maintenance note:
 
-- frontend source code was not available in this repository
-- verification was performed through the live HTML and downloaded bundle artifacts only
+- because the frontend lives outside this repository, backend and frontend documentation still need periodic synchronization across both repositories
 
 ## Refactoring References
 
@@ -262,7 +268,7 @@ This should be used together with `api-v2` as the current architectural baseline
 Short-term priorities:
 
 1. use `api-v2` as the main supported backend
-2. align the frontend with the `api-v2` conversion registry
+2. keep the frontend aligned with the `api-v2` conversion registry
 3. keep documentation synchronized with runtime behavior
 4. expose only conversions that are operationally stable under Render Free Tier
 5. continue phasing out legacy assumptions from the public product narrative

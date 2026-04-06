@@ -11,6 +11,11 @@ The project is intentionally relevant from a quality engineering perspective: it
 - Legacy conversion API: [https://conv-api-la6e.onrender.com](https://conv-api-la6e.onrender.com)
 - Image metadata API: [https://conv-yw21.onrender.com](https://conv-yw21.onrender.com)
 
+Operational note:
+
+- the active frontend now targets `api-v2` for both conversion and image metadata extraction
+- the legacy APIs remain online as historical or transitional surfaces, not as the preferred public contract
+
 ## Repository Scope
 
 This repository currently contains five relevant areas:
@@ -21,7 +26,10 @@ This repository currently contains five relevant areas:
 4. API validation assets in [`postman`](postman)
 5. Refactoring and architecture material in [`docs`](docs)
 
-The frontend is referenced by this repository but is hosted separately.
+The frontend is maintained in a separate repository:
+
+- frontend source: [https://github.com/guibim/conv-site](https://github.com/guibim/conv-site)
+- published frontend: [https://guibim.github.io/conv-site](https://guibim.github.io/conv-site)
 
 ## Architecture Overview
 
@@ -54,6 +62,18 @@ The original backend remains in [`app`](app) as legacy implementation and histor
 ### Image metadata API
 
 The EXIF-focused service remains separate in [`extract-img-api`](extract-img-api). It should now be treated as a legacy or transitional surface, because equivalent image metadata extraction capability has been incorporated into `api-v2`.
+
+### Frontend
+
+The frontend has already been refactored in the separate `conv-site` repository to align with the current `api-v2` contract.
+
+Current frontend posture:
+
+- `Conv` branding aligned with the repository and backend naming
+- only active `api-v2` conversion routes are exposed in the public catalog
+- `POST /extract-metadata` from `api-v2` is used as the main metadata flow
+- frontend copy explicitly mentions Render Free Tier and cold start behavior
+- older conversion flows such as `dta`, `xlsx`, `sql`, `markdown`, `yaml`, and IFC-related routes are no longer presented as active production capabilities
 
 ## Main API v2 Endpoints
 
@@ -109,6 +129,8 @@ The current `api-v2` registry includes:
 The live list can also be queried directly from:
 
 - [https://conv-nyst.onrender.com/conversions](https://conv-nyst.onrender.com/conversions)
+
+The frontend catalog should be treated as a UI reflection of this registry, not as an independent source of truth.
 
 ## Quality Engineering Positioning
 
@@ -182,20 +204,20 @@ The repository already includes dedicated refactoring guidance in:
 
 This document captures the standardization plan for conversion contracts, registry structure, migration strategy, and classification of stable versus problematic formats.
 
-## Known Frontend Inconsistencies
+## Frontend Alignment Status
 
-The currently published frontend was checked against the live bundle and the current backend state. The following inconsistencies are visible today:
+The frontend source is now known and has been updated in its own repository to reflect the current backend reality.
 
-- the frontend still uses the older `Conv+` branding and title while the repository and new backend documentation now use `Conv`
-- the frontend still references legacy conversion routes and capabilities that are broader than the `api-v2` registry
-- the site still includes navigation for routes such as `dta -> csv`, `csv -> sql`, `csv -> markdown`, `html -> markdown`, `json -> yaml`, and IFC-related outputs, while these are not part of the current `api-v2` production contract
-- the frontend metadata flow still points to the legacy image metadata API instead of the new `api-v2` metadata endpoint
-- the About page text still describes the older modular service model and a broader set of use cases than the new hardened API currently exposes
+Current frontend alignment decisions:
 
-Important limitation:
+- use `api-v2` as the main integration target
+- expose only supported conversion routes from the current production contract
+- keep image metadata extraction in the same main user flow
+- present Render Free Tier and cold start as expected runtime characteristics
 
-- frontend code was not available in this repository for direct code review
-- the frontend verification was performed against the published application artifact and downloaded bundle, not its source repository
+Remaining documentation caveat:
+
+- this repository still does not contain the frontend source itself, so frontend implementation changes happen in the separate `conv-site` repository
 
 ## Documentation Companion
 
@@ -214,6 +236,7 @@ The current technical direction is:
 - keep the runtime lightweight
 - align documentation with runtime reality
 - use `api-v2` as the new primary backend baseline
+- keep the frontend aligned with the `api-v2` registry and metadata endpoint
 - reduce security and availability risks present in the legacy API
 - improve testability and operational clarity
 
